@@ -73,6 +73,15 @@ public:
 	int getNumUtilities() {
 		return numUtilities;
 	}
+	int getNumDoubles() {
+		return numDoubles;
+	}
+	int getNumTurnsInJail() {
+		return numTurnsInJail;
+	}
+	int getNumGetOutOfJailCards() {
+		return numGetOutOfJailCards;
+	}
 
 	//iPosition is input position
 	void setPosition(int iPosition) {
@@ -186,22 +195,44 @@ public:
 	void subtractUtility() {
 		numUtilities -= 1;
 	}
+	void addNumDoubles() {
+		numDoubles += 1;
+	}
+	void setNumDoublesZero() {
+		numDoubles = 0;
+	}
+	void addNumTurnsInJail() {
+		numTurnsInJail += 1;
+	}
+	void setNumTurnsInJailZero() {
+		numTurnsInJail = 0;
+	}
+	void addNumGetOutOfJailCards() {
+		numGetOutOfJailCards += 1;
+	}
+	void subtractNumGetOutOfJailCards() {
+		numGetOutOfJailCards -= 1;
+	}
 
 	//this function rolls two dice for an object of type Players.
 	void rollDice() {
-		string choice;
-		cout << "Roll Dice? (y or n): ";
-		cin >> choice;
-		cout << endl;
-		if (choice == "Y" || choice == "y") {
-			die1 = (rand() % 6) + 1;
-			die2 = (rand() % 6) + 1;
-			cout << "You Rolled a " << die1 << " and a " << die2 << endl;
-			move(die1, die2);
+		die1 = (rand() % 6) + 1;
+		die2 = (rand() % 6) + 1;
+		cout << "You Rolled a " << die1 << " and a " << die2 << endl;
+		//This checks if they are rolling for doubles from jail
+		if (position == JAIL + 1) {
+			if (die1 == die2) {
+				position = JUST_VISITING + 1;
+			}
 		}
-		else {
-			move(0, 0);
+		//This checks if they roll a third double
+		if (numDoubles = 2 && die1 == die2) {
+			numDoubles += 1;
+			cout << "Go to jail for rolling 3 doubles in a row!" << endl;
+			position = JAIL + 1;
 		}
+		move(die1, die2);
+
 	}
 
 	
@@ -215,6 +246,9 @@ private:
 	int die2 = 0;
 	string die3 = " ";
 	int indexOfSpacesOwned[28];
+	int numDoubles = 0;
+	int numTurnsInJail = 0;
+	int numGetOutOfJailCards = 0;
 
 	int numBrown = 0;
 	int numLightBlue = 0;

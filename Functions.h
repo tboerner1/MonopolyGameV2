@@ -8,6 +8,7 @@
 #include "Players.h"
 #include <fstream>
 #include <iomanip>
+#include "PlayerTurn.h"
 
 
 void buildBoard(Board tile[], int num_spaces);
@@ -30,13 +31,16 @@ void removeHouses(Board tile[], Players player[], int index, int playerNum);
 void giveTile(Board tile[], Players player[], int index, int playerNum);
 void monopolize(Board tile[], Players player[], int index, int PlayerNum);
 bool checkIsMortgaged(Board tile[], Players player[], int index, int playerNum);
+void jailTurn(Board tile[], Players player[], int playerNum);
 
+const int GO = 0;
 const int BROWN1 = 1;
 const int BROWN2 = 3;
 const int RAILROAD1 = 5;
 const int LIGHT_BLUE1 = 6;
 const int LIGHT_BLUE2 = 8;
 const int LIGHT_BLUE3 = 9;
+const int JUST_VISITING = 10;
 const int PINK1 = 11;
 const int UTILITY1 = 12;
 const int PINK2 = 13;
@@ -147,6 +151,10 @@ void checkSpace(Board tile[], Players player[], int index, int playerNum) {
 	}
 	if (tile[index].getId() == "gtJail") {
 		player[playerNum - 1].setPosition(41);
+	}
+	if (tile[index].getId() == "fParking") {
+		player[playerNum - 1].addMoney(tile[index].getPrice());
+		tile[index].setPrice(0);
 	}
 
 
@@ -713,6 +721,55 @@ void forceBankruptcy(Board tile[], Players player[], int index, int playerNum, i
 		cout << "You don't have enough money to pay rent\n"
 			<< "You must declare bankruptcy\n";
 		player[playerNum - 1].setMoney(-1);
+	}
+}
+//This function allows the player to use a get out of jail
+//free card, roll for doubles, or pay the $50 fine to get out
+//of jail. You can only be in jail for three turns, then it 
+//forces you out.
+void jailTurn(Board tile[], Players player[], int playerNum) {
+	player[playerNum - 1].addNumTurnsInJail();
+	//checks if the player has at least 1 get out of jail free card
+	if (player[playerNum - 1].getNumGetOutOfJailCards() > 0) {
+		//asks the player if they want to use said card
+		if (MessageBox::Show("Player " + (playerNum) + "\n" + "Do you want to use a\n"
+			+ "Get Out of Jail Free Card?", "Jail", MessageBoxButtons::YesNo,
+			MessageBoxIcon::Question) == System::Windows::Forms::DialogResult::Yes) {
+			player[playerNum - 1].setNumTurnsInJailZero();
+			player[playerNum - 1].subtractNumGetOutOfJailCards();
+			player[playerNum - 1].setPosition(JUST_VISITING + 1);
+			return;
+		}
+	}
+	//Asks the player if they want to roll for doubles.
+	if (MessageBox::Show("Player " + (playerNum)+"\n" + "Do you want to roll\n"
+		+ "For Doubles?", "Jail", MessageBoxButtons::YesNo,
+		MessageBoxIcon::Question) == System::Windows::Forms::DialogResult::Yes) {
+		player[playerNum - 1].setNumTurnsInJailZero();
+		player[playerNum - 1].rollDice();
+		return;
+	}
+	else {
+		if (MessageBox::Show("Player " + (playerNum)+"\n" + "Do you want to pay\n"
+			+ "the $50 fine?", "Jail", MessageBoxButtons::YesNo,
+			MessageBoxIcon::Question) == System::Windows::Forms::DialogResult::Yes) {
+			player[playerNum - 1].setNumTurnsInJailZero();
+			player[playerNum - 1].subtractMoney(50);
+			player[playerNum - 1].setPosition(JUST_VISITING + 1);
+			player[playerNum - 1].rollDice();
+			return;
+		}
+	}
+
+	if (player[playerNum - 1].getNumTurnsInJail() == 3) {
+		if (MessageBox::Show("Player " + (playerNum)+"\n" + "You have to pay\n"
+			+ "the 50 fine.", "Jail", MessageBoxButtons::OK,
+			MessageBoxIcon::Exclamation) == System::Windows::Forms::DialogResult::OK) {
+			player[playerNum - 1].setNumTurnsInJailZero();
+			player[playerNum - 1].subtractMoney(50);
+			player[playerNum - 1].setPosition(JUST_VISITING + 1);
+			player[playerNum - 1].rollDice();
+		}
 	}
 }
 //This function allows the current player to declare bankruptcy

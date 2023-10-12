@@ -36,11 +36,26 @@ void main() {
 	do {
 
 		if (!player[playerIndex].getIsBankrupt()) {
+			if (player[playerIndex].getPosition() == JAIL) {
+				jailTurn(tile, player, playerIndex + 1);
+				checkSpace(tile, player, player[playerIndex].getPosition() - 1, playerIndex + 1);
+				playerIndex++;
 
-			cout << "Player " << playerIndex + 1 << ": " << endl;
-			cout << "You have $" << player[playerIndex].getMoney() << endl;
-			MonopolyGameWithGUI::PlayerTurn::Form^ frm = gcnew MonopolyGameWithGUI::PlayerTurn;
-			Application::Run(frm);
+			}
+			do {
+				cout << "Player " << playerIndex + 1 << ": " << endl;
+				cout << "You have $" << player[playerIndex].getMoney() << endl;
+				MonopolyGameWithGUI::PlayerTurn::Form^ frm = gcnew MonopolyGameWithGUI::PlayerTurn;
+				Application::Run(frm);
+				if (player[playerIndex].getDie1() == player[playerIndex].getDie2() &&
+					player[playerIndex].getNumDoubles() < 3) {
+					cout << "You rolled Doubles, take another turn" << endl;
+					player[playerIndex].addNumDoubles();
+				}
+			} while (player[playerIndex].getDie1() == player[playerIndex].getDie2() &&
+				player[playerIndex].getNumDoubles() < 3);
+			player[playerIndex].setNumDoublesZero();
+			
 			
 		}
 		if (playerIndex < NUM_PLAYERS - 1) {
