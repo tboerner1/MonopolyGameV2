@@ -8,6 +8,7 @@
 #include <cstdlib>
 #include "Board.h"
 
+
 using namespace std;
 
 class Players {
@@ -226,7 +227,7 @@ public:
 			}
 		}
 		//This checks if they roll a third double
-		if (numDoubles = 2 && die1 == die2) {
+		if (numDoubles == 2 && die1 == die2) {
 			numDoubles += 1;
 			cout << "Go to jail for rolling 3 doubles in a row!" << endl;
 			position = JAIL + 1;

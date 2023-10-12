@@ -9,6 +9,15 @@
 #include <fstream>
 #include <iomanip>
 #include "PlayerTurn.h"
+#include "Constants.h"
+#include <Windows.h>
+
+using namespace System;
+using namespace System::ComponentModel;
+using namespace System::Collections;
+using namespace System::Windows::Forms;
+using namespace System::Data;
+using namespace System::Drawing;
 
 
 void buildBoard(Board tile[], int num_spaces);
@@ -32,40 +41,6 @@ void giveTile(Board tile[], Players player[], int index, int playerNum);
 void monopolize(Board tile[], Players player[], int index, int PlayerNum);
 bool checkIsMortgaged(Board tile[], Players player[], int index, int playerNum);
 void jailTurn(Board tile[], Players player[], int playerNum);
-
-const int GO = 0;
-const int BROWN1 = 1;
-const int BROWN2 = 3;
-const int RAILROAD1 = 5;
-const int LIGHT_BLUE1 = 6;
-const int LIGHT_BLUE2 = 8;
-const int LIGHT_BLUE3 = 9;
-const int JUST_VISITING = 10;
-const int PINK1 = 11;
-const int UTILITY1 = 12;
-const int PINK2 = 13;
-const int PINK3 = 14;
-const int RAILROAD2 = 15;
-const int ORANGE1 = 16;
-const int ORANGE2 = 18;
-const int ORANGE3 = 19;
-const int F_PARKING = 20;
-const int RED1 = 21;
-const int RED2 = 23;
-const int RED3 = 24;
-const int RAILROAD3 = 25;
-const int YELLOW1 = 26;
-const int YELLOW2 = 27;
-const int UTILITY2 = 28;
-const int YELLOW3 = 29;
-const int GT_JAIL = 30;
-const int GREEN1 = 31;
-const int GREEN2 = 32;
-const int GREEN3 = 34;
-const int RAILROAD4 = 35;
-const int DARK_BLUE1 = 37;
-const int DARK_BLUE2 = 39;
-const int JAIL = 40;
 
 int playerIndex = 0;
 
@@ -751,8 +726,8 @@ void jailTurn(Board tile[], Players player[], int playerNum) {
 	}
 	else {
 		if (MessageBox::Show("Player " + (playerNum)+"\n" + "Do you want to pay\n"
-			+ "the $50 fine?", "Jail", MessageBoxButtons::YesNo,
-			MessageBoxIcon::Question) == System::Windows::Forms::DialogResult::Yes) {
+		+ "the $50 fine?", "Jail", MessageBoxButtons::YesNo,
+		MessageBoxIcon::Question) == System::Windows::Forms::DialogResult::Yes) {
 			player[playerNum - 1].setNumTurnsInJailZero();
 			player[playerNum - 1].subtractMoney(50);
 			player[playerNum - 1].setPosition(JUST_VISITING + 1);

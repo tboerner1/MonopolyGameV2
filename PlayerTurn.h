@@ -154,10 +154,10 @@ namespace MonopolyGameWithGUI {
 		private: System::Void RollDice_Click(System::Object^ sender, System::EventArgs^ e) {
 			string temp = "Pickles";
 			//Player1->Text = temp;
+			MonopolyGameWithGUI::PlayerTurn::Close();
 			setLabel();
 			player[playerIndex].rollDice();
 			checkSpace(tile, player, player[playerIndex].getPosition() - 1, player[playerIndex].getPlayerNum());
-			MonopolyGameWithGUI::PlayerTurn::Close();
 		}
 		private: System::Void BuildMortgage_Click(System::Object^ sender, System::EventArgs^ e) {
 			checkMortgage(tile, player, player[playerIndex].getPosition() - 1, player[playerIndex].getPlayerNum());
@@ -166,8 +166,8 @@ namespace MonopolyGameWithGUI {
 			if (MessageBox::Show("Player " + (playerIndex + 1) + "\n" + "Are You Sure You Want To\n"
 				+ "Declare Bankruptcy?", "Bankruptcy", MessageBoxButtons::YesNo,
 				MessageBoxIcon::Stop) == System::Windows::Forms::DialogResult::Yes) {
-				num_bankrupt += declareBankruptcy(tile, player, player[playerIndex].getPosition() - 1, player[playerIndex].getPlayerNum());
 				MonopolyGameWithGUI::PlayerTurn::Close();
+				num_bankrupt += declareBankruptcy(tile, player, player[playerIndex].getPosition() - 1, player[playerIndex].getPlayerNum());
 			}
 			
 		}
