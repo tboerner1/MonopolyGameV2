@@ -154,6 +154,7 @@ namespace MonopolyGameWithGUI {
 		private: System::Void RollDice_Click(System::Object^ sender, System::EventArgs^ e) {
 			string temp = "Pickles";
 			//Player1->Text = temp;
+			
 			MonopolyGameWithGUI::PlayerTurn::Close();
 			setLabel();
 			player[playerIndex].rollDice();

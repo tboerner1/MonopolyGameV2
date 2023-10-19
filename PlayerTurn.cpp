@@ -42,28 +42,37 @@ void main() {
 				cout << "You have $" << player[playerIndex].getMoney() << endl;
 				jailTurn(tile, player, playerIndex + 1);
 				checkSpace(tile, player, player[playerIndex].getPosition() - 1, playerIndex + 1);
-				if (playerIndex < NUM_PLAYERS - 1) {
-					playerIndex++;
+				//If player came out of jail with doubles or didn't roll doubles after getting
+				//out of jail.
+				if(player[playerIndex].getPosition() != JAIL + 1){
+					player[playerIndex].setNumTurnsInJailZero();
 				}
-				else {
-					playerIndex = 0;
+				if (player[playerIndex].getNumTurnsInJail() == -1 || player[playerIndex].getDie1() !=
+					player[playerIndex].getDie2() || player[playerIndex].getDie1() == 0) {
+					if (playerIndex < NUM_PLAYERS - 1) {
+						playerIndex++;
+					}
+					else {
+						playerIndex = 0;
+					}
 				}
+				
 			}
-			do {
-				cout << "Player " << playerIndex + 1 << ": " << endl;
-				cout << "You have $" << player[playerIndex].getMoney() << endl;
-				MonopolyGameWithGUI::PlayerTurn::Form^ frm = gcnew MonopolyGameWithGUI::PlayerTurn;
-				Application::Run(frm);
-				if (player[playerIndex].getDie1() == player[playerIndex].getDie2() &&
-					player[playerIndex].getNumDoubles() < 3 && player[playerIndex].getDie1() != 0) {
-					cout << "You rolled Doubles, take another turn" << endl;
-					player[playerIndex].addNumDoubles();
-				}
-			} while (player[playerIndex].getDie1() == player[playerIndex].getDie2() &&
-				player[playerIndex].getNumDoubles() < 3 && player[playerIndex].getDie1() != 0);
-			player[playerIndex].setNumDoublesZero();
-			
-			
+			if (!player[playerIndex].getIsBankrupt() && num_bankrupt < NUM_PLAYERS - 1) {
+				do {
+					cout << "Player " << playerIndex + 1 << ": " << endl;
+					cout << "You have $" << player[playerIndex].getMoney() << endl;
+					MonopolyGameWithGUI::PlayerTurn::Form^ frm = gcnew MonopolyGameWithGUI::PlayerTurn;
+					Application::Run(frm);
+					if (player[playerIndex].getDie1() == player[playerIndex].getDie2() &&
+						player[playerIndex].getNumDoubles() < 3 && player[playerIndex].getDie1() != 0) {
+						cout << "You rolled Doubles, take another turn" << endl;
+						player[playerIndex].addNumDoubles();
+					}
+				} while (player[playerIndex].getDie1() == player[playerIndex].getDie2() &&
+					player[playerIndex].getNumDoubles() < 3 && player[playerIndex].getDie1() != 0);
+				player[playerIndex].setNumDoublesZero();
+			}
 		}
 		if (playerIndex < NUM_PLAYERS - 1) {
 			playerIndex++;
@@ -72,5 +81,4 @@ void main() {
 			playerIndex = 0;
 		}
 	}
-
 }

@@ -121,11 +121,15 @@ public:
 	void setIsMortgaged() {
 		isMortgaged = !isMortgaged;
 	}
-	//isMonopolized is flipped whenever setIsMonopolized
+	//isMonopolized is set to true whenever setIsMonopolized
 	//is called because it doesn't need to be set
 	//to specific values.
 	void setIsMonopolized() {
-		isMonopolized = !isMonopolized;
+		isMonopolized = true;
+	}
+	//isMonopolized is set to false.
+	void unMonopolize() {
+		isMonopolized = false;
 	}
 	//iColor is input color
 	void setColor(string iColor) {

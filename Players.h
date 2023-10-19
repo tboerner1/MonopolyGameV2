@@ -208,6 +208,9 @@ public:
 	void setNumTurnsInJailZero() {
 		numTurnsInJail = 0;
 	}
+	void setNumTurnsInJailNegative() {
+		numTurnsInJail = -1;
+	}
 	void addNumGetOutOfJailCards() {
 		numGetOutOfJailCards += 1;
 	}
@@ -224,6 +227,7 @@ public:
 		if (position == JAIL + 1) {
 			if (die1 == die2) {
 				position = JUST_VISITING + 1;
+				numTurnsInJail = -1;
 			}
 		}
 		//This checks if they roll a third double

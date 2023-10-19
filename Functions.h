@@ -41,6 +41,8 @@ void giveTile(Board tile[], Players player[], int index, int playerNum);
 void monopolize(Board tile[], Players player[], int index, int PlayerNum);
 bool checkIsMortgaged(Board tile[], Players player[], int index, int playerNum);
 void jailTurn(Board tile[], Players player[], int playerNum);
+void giveOnePlayerProperties(Board tile[], Players player[], int index, int playerNum);
+void giveUpProperties(Board tile[], Players player[], int index, int playerNum);
 
 int playerIndex = 0;
 
@@ -704,6 +706,7 @@ void forceBankruptcy(Board tile[], Players player[], int index, int playerNum, i
 //forces you out.
 void jailTurn(Board tile[], Players player[], int playerNum) {
 	player[playerNum - 1].addNumTurnsInJail();
+	cout << "Turn in Jail: " << player[playerNum - 1].getNumTurnsInJail() << endl;
 	//checks if the player has at least 1 get out of jail free card
 	if (player[playerNum - 1].getNumGetOutOfJailCards() > 0) {
 		//asks the player if they want to use said card
@@ -713,16 +716,19 @@ void jailTurn(Board tile[], Players player[], int playerNum) {
 			player[playerNum - 1].setNumTurnsInJailZero();
 			player[playerNum - 1].subtractNumGetOutOfJailCards();
 			player[playerNum - 1].setPosition(JUST_VISITING + 1);
-			return;
+			if (player[playerNum - 1].getNumTurnsInJail() != 3) {
+				return;
+			}
 		}
 	}
 	//Asks the player if they want to roll for doubles.
 	if (MessageBox::Show("Player " + (playerNum)+"\n" + "Do you want to roll\n"
 		+ "For Doubles?", "Jail", MessageBoxButtons::YesNo,
 		MessageBoxIcon::Question) == System::Windows::Forms::DialogResult::Yes) {
-		player[playerNum - 1].setNumTurnsInJailZero();
 		player[playerNum - 1].rollDice();
-		return;
+		if (player[playerNum - 1].getNumTurnsInJail() != 3) {
+			return;
+		}
 	}
 	else {
 		if (MessageBox::Show("Player " + (playerNum)+"\n" + "Do you want to pay\n"
@@ -732,10 +738,11 @@ void jailTurn(Board tile[], Players player[], int playerNum) {
 			player[playerNum - 1].subtractMoney(50);
 			player[playerNum - 1].setPosition(JUST_VISITING + 1);
 			player[playerNum - 1].rollDice();
-			return;
+			if (player[playerNum - 1].getNumTurnsInJail() != 3) {
+				return;
+			}
 		}
 	}
-
 	if (player[playerNum - 1].getNumTurnsInJail() == 3) {
 		if (MessageBox::Show("Player " + (playerNum)+"\n" + "You have to pay\n"
 			+ "the 50 fine.", "Jail", MessageBoxButtons::OK,
@@ -747,28 +754,76 @@ void jailTurn(Board tile[], Players player[], int playerNum) {
 		}
 	}
 }
+
+//This function gives all properties from one player to the player that made them go 
+//bankrupt
+void giveOnePlayerProperties(Board tile[], Players player[], int index, int playerNum) {
+	int i = 0;
+	
+	while (i < 28 && player[playerNum - 1].getSpacesOwnedIndex(i) != -1) {
+		giveTile(tile, player, player[playerNum - 1].getSpacesOwnedIndex(i), tile[index].getOwner());
+		i++;
+	}
+}
+
+//This function 
+void giveUpProperties(Board tile[], Players player[], int index, int playerNum) {
+	//keeping track of space indexes
+	int i = 0;
+	//keeping track of player nums with j acting as an index
+	int j;
+	if (playerNum < NUM_PLAYERS) {
+		j = playerNum + 1; //playerNum is 1 higher than the actual player index.
+		//so this starts at the player after the player who just declared bankruptcy.
+	}
+	else {
+		j = 1;
+	}
+	
+	while (i < 28 && player[playerNum - 1].getSpacesOwnedIndex(i) != -1) {
+		//if the property being given up is monopolized
+		if (tile[player[playerNum - 1].getSpacesOwnedIndex(i)].getIsMonopolized()) {
+			tile[player[playerNum - 1].getSpacesOwnedIndex(i)].unMonopolize();
+		}
+		//if the number of houses on the property is more than zero, set it to zero
+		if (tile[player[playerNum - 1].getSpacesOwnedIndex(i)].getNumHouses() != 0) {
+			tile[player[playerNum - 1].getSpacesOwnedIndex(i)].setHouseZero();
+		}
+		if (!(player[j-1].getIsBankrupt())) {
+			giveTile(tile, player, player[playerNum - 1].getSpacesOwnedIndex(i), j);
+			//Only increment i when the property has been given away.
+			i++;
+		}
+		//j can only be incremented up to NUM_PLAYERS.
+		if (j < NUM_PLAYERS) {
+			j++;
+		}
+		else {
+			j = 1;
+		}
+	}
+}
 //This function allows the current player to declare bankruptcy
 //at the end of their turn
 int declareBankruptcy(Board tile[], Players player[], int index, int playerNum) {
 	if (player[playerNum - 1].getMoney() == -1) {
 		player[playerNum - 1].setBankrupt();
 		cout << "You declared bankruptcy. Goodbye!" << endl << endl;
-		return 1;
-	}
-	else {
-		string choice;
-		cout << "Do you want to declare bankruptcy? (y or n): ";
-		cin >> choice;
-		if (choice == "y" || choice == "Y") {
-			player[playerNum - 1].setBankrupt();
-			cout << "You declared bankruptcy. Goodbye!" << endl << endl;
+		num_bankrupt += 1;
+		//If the player was forced into bankruptcy and is on a property
+		if (tile[index].getId() == "bProperty" || tile[index].getId() == "utility" || tile[index].getId() == "railroad") {
+			cout << "Giving one player properties" << endl;
+			giveOnePlayerProperties(tile, player, index, playerNum);
 			return 1;
 		}
-		else {
-			cout << "Turn Over" << endl << endl;
-			return 0;
-		}
 	}
+	else {
+		player[playerNum - 1].setBankrupt();
+		cout << "You declared bankruptcy. Goodbye!" << endl << endl;
+	}
+	cout << "Giving ALL players Properties" << endl;
+	giveUpProperties(tile, player, index, playerNum);
+	return 1;
 }
 
 #endif // !H_Functions
