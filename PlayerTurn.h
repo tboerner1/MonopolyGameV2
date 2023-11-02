@@ -72,10 +72,10 @@ namespace MonopolyGameWithGUI {
 			// 
 			this->RollDice->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 18, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
-			this->RollDice->Location = System::Drawing::Point(21, 14);
-			this->RollDice->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
+			this->RollDice->Location = System::Drawing::Point(42, 27);
+			this->RollDice->Margin = System::Windows::Forms::Padding(4, 4, 4, 4);
 			this->RollDice->Name = L"RollDice";
-			this->RollDice->Size = System::Drawing::Size(246, 65);
+			this->RollDice->Size = System::Drawing::Size(492, 125);
 			this->RollDice->TabIndex = 0;
 			this->RollDice->Text = L"Roll Dice";
 			this->RollDice->UseVisualStyleBackColor = true;
@@ -85,10 +85,10 @@ namespace MonopolyGameWithGUI {
 			// 
 			this->BuildMortgage->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 18, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
-			this->BuildMortgage->Location = System::Drawing::Point(21, 93);
-			this->BuildMortgage->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
+			this->BuildMortgage->Location = System::Drawing::Point(42, 179);
+			this->BuildMortgage->Margin = System::Windows::Forms::Padding(4, 4, 4, 4);
 			this->BuildMortgage->Name = L"BuildMortgage";
-			this->BuildMortgage->Size = System::Drawing::Size(246, 65);
+			this->BuildMortgage->Size = System::Drawing::Size(492, 125);
 			this->BuildMortgage->TabIndex = 1;
 			this->BuildMortgage->Text = L"Build/Mortgage";
 			this->BuildMortgage->UseVisualStyleBackColor = true;
@@ -98,22 +98,23 @@ namespace MonopolyGameWithGUI {
 			// 
 			this->Trade->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 18, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
-			this->Trade->Location = System::Drawing::Point(21, 171);
-			this->Trade->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
+			this->Trade->Location = System::Drawing::Point(42, 329);
+			this->Trade->Margin = System::Windows::Forms::Padding(4, 4, 4, 4);
 			this->Trade->Name = L"Trade";
-			this->Trade->Size = System::Drawing::Size(246, 65);
+			this->Trade->Size = System::Drawing::Size(492, 125);
 			this->Trade->TabIndex = 2;
 			this->Trade->Text = L"Trade";
 			this->Trade->UseVisualStyleBackColor = true;
+			this->Trade->Click += gcnew System::EventHandler(this, &PlayerTurn::Trade_Click);
 			// 
 			// DeclareBankruptcy
 			// 
 			this->DeclareBankruptcy->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 18, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
-			this->DeclareBankruptcy->Location = System::Drawing::Point(21, 252);
-			this->DeclareBankruptcy->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
+			this->DeclareBankruptcy->Location = System::Drawing::Point(42, 485);
+			this->DeclareBankruptcy->Margin = System::Windows::Forms::Padding(4, 4, 4, 4);
 			this->DeclareBankruptcy->Name = L"DeclareBankruptcy";
-			this->DeclareBankruptcy->Size = System::Drawing::Size(246, 65);
+			this->DeclareBankruptcy->Size = System::Drawing::Size(492, 125);
 			this->DeclareBankruptcy->TabIndex = 3;
 			this->DeclareBankruptcy->Text = L"Declare Bankruptcy";
 			this->DeclareBankruptcy->UseVisualStyleBackColor = true;
@@ -123,8 +124,8 @@ namespace MonopolyGameWithGUI {
 			// 
 			this->Player1->AutoSize = true;
 			this->Player1->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 17.5F));
-			this->Player1->Location = System::Drawing::Point(322, 34);
-			this->Player1->Margin = System::Windows::Forms::Padding(2, 0, 2, 0);
+			this->Player1->Location = System::Drawing::Point(644, 65);
+			this->Player1->Margin = System::Windows::Forms::Padding(4, 0, 4, 0);
 			this->Player1->Name = L"Player1";
 			this->Player1->Size = System::Drawing::Size(147, 54);
 			this->Player1->TabIndex = 4;
@@ -132,15 +133,15 @@ namespace MonopolyGameWithGUI {
 			// 
 			// PlayerTurn
 			// 
-			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
+			this->AutoScaleDimensions = System::Drawing::SizeF(12, 25);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-			this->ClientSize = System::Drawing::Size(616, 372);
+			this->ClientSize = System::Drawing::Size(1232, 715);
 			this->Controls->Add(this->Player1);
 			this->Controls->Add(this->DeclareBankruptcy);
 			this->Controls->Add(this->Trade);
 			this->Controls->Add(this->BuildMortgage);
 			this->Controls->Add(this->RollDice);
-			this->Margin = System::Windows::Forms::Padding(2, 2, 2, 2);
+			this->Margin = System::Windows::Forms::Padding(4, 4, 4, 4);
 			this->Name = L"PlayerTurn";
 			this->Text = L"Player Turn";
 			this->Load += gcnew System::EventHandler(this, &PlayerTurn::PlayerTurn_Load);
@@ -172,11 +173,15 @@ namespace MonopolyGameWithGUI {
 			}
 			
 		}
+		private: System::Void Trade_Click(System::Object^ sender, System::EventArgs^ e) {
+			initializeTrade(tile, player, player[playerIndex].getPlayerNum());
+		}
 		public:
 			void setLabel() {
 				
 				Player1->Text = "This works";
 			}
+	
 	};
 }
 

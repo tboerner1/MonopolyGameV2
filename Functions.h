@@ -43,6 +43,8 @@ bool checkIsMortgaged(Board tile[], Players player[], int index, int playerNum);
 void jailTurn(Board tile[], Players player[], int playerNum);
 void giveOnePlayerProperties(Board tile[], Players player[], int index, int playerNum);
 void giveUpProperties(Board tile[], Players player[], int index, int playerNum);
+void initializeTrade(Board tile[], Players player[], int playerNum);
+void trade(Board tile[], Players player[], int playerNum, int otherPlayerNum);
 
 int playerIndex = 0;
 
@@ -624,8 +626,6 @@ void removeHouses(Board tile[], Players player[], int index, int playerNum) {
 		}
 		i++;
 	}
-	//adds mortgage price on at the end since the property will still be mortgaged.
-	player[playerNum - 1].addMoney(tile[index].getMortgagePrice());
 }
 
 
@@ -636,8 +636,6 @@ bool checkIsMortgaged(Board tile[], Players player[], int index, int playerNum) 
 	string tempColor = tile[index].getColor();
 	while (i < 28 && player[playerNum - 1].getSpacesOwnedIndex(i) != -1) {
 		tempIndex = player[playerNum - 1].getSpacesOwnedIndex(i);
-		//if a tile is the same color as the tile being mortgaged, remove all the houses
-		//from it and pay the user for all those houses. Then setNumHouses = 0;
 		if (tile[tempIndex].getColor() == tempColor && tile[tempIndex].getIsMortgaged()) {
 			return true;
 		}
@@ -663,6 +661,8 @@ void mortgage(Board tile[], Players player[], int index, int playerNum) {
 	//if the tile is not mortgaged and the number of houses is not 0
 	else if (!tile[index].getIsMortgaged() && tile[index].getIsMonopolized()) {
 		removeHouses(tile, player, index, playerNum);
+		//adds mortgage price on at the end since the property will still be mortgaged.
+		player[playerNum - 1].addMoney(tile[index].getMortgagePrice());
 	}
 	//if the tile is mortgaged 
 	else if (tile[index].getIsMortgaged()) {
@@ -803,6 +803,167 @@ void giveUpProperties(Board tile[], Players player[], int index, int playerNum) 
 		}
 	}
 }
+
+//This function allows a player to choose what player they want to trade with
+//Then it moves into the actual trading portion.
+void initializeTrade(Board tile[], Players player[], int playerNum) {
+	int otherPlayerNum = 0;
+	do {
+		cout << "Which player would you like to trade with?" << endl;
+		for (int i = 0; i < NUM_PLAYERS; i++) {
+			if (!player[i].getIsBankrupt() && i != playerNum - 1) {
+				cout << "Player " << i + 1 << endl << endl;
+			}
+		}
+		cout << "Please enter the number of the player you would like to trade with: ";
+		cin >> otherPlayerNum;
+		//This checks that the number entered is in the expected range, the proposed player is not bankrupt
+		//and the proposed player is not the current player.
+		if (!cin || otherPlayerNum == playerNum || player[otherPlayerNum].getIsBankrupt() || otherPlayerNum < 1
+			|| otherPlayerNum > NUM_PLAYERS) {
+			cout << "Please enter a valid player, this player can't be you nor can they be bankrupt." << endl;
+		}
+	//This checks that the number entered is in the expected range, the proposed player is not bankrupt
+	//and the proposed player is not the current player.
+	} while (!cin || otherPlayerNum == playerNum || player[otherPlayerNum].getIsBankrupt() || otherPlayerNum < 1
+		|| otherPlayerNum > NUM_PLAYERS);
+	trade(tile, player, playerNum, otherPlayerNum);
+}
+
+//This function prints all the properties these two players can trade, and allows
+//the current player to propose a trade.
+void trade(Board tile[], Players player[], int playerNum, int otherPlayerNum) {
+	const int ONE = 1;
+	const int FIVE = 5;
+	const int SEVEN = 7;
+	const int EIGHT = 8;
+	const int TEN = 10;
+	const int FIFTEEN = 15;
+	const int SEVENTEEN = 17;
+	const int EIGHTEEN = 18;
+	const int TWENTY_FOUR = 24;
+	const int TWENTY_FIVE = 25;
+
+
+	int counter1 = 1;
+	int counter2 = 1;
+	system("cls");
+	//This prints off the beginning of each column for the players.
+	cout << setw(SEVEN) << left << "Player " << setw(EIGHTEEN)<< playerNum 
+		<< setw(SEVEN) << "Player" << setw(EIGHTEEN) << otherPlayerNum << endl;
+	cout << setw(TEN) << "You have $" << setw(FIFTEEN) << player[playerNum - 1].getMoney() 
+		<< setw(TEN) << "You have $" << setw(FIFTEEN) << player[otherPlayerNum -1].getMoney() << endl << endl;
+	cout << setw(TWENTY_FIVE) << "You have: " << setw(TWENTY_FIVE) << "You have: " << endl;
+	//i is the position in the array that stores the indexes of the properties owned
+	int i = 0;
+	//while either player still has properties left or they have not reached the end of their property list.
+	while ((player[playerNum - 1].getSpacesOwnedIndex(i) != -1 || player[otherPlayerNum-1].getSpacesOwnedIndex(i) != -1)
+		&& i != 28) {
+		//tileIndex is the index of the tiles that the player owns
+		//tileIndex2 is the index of the tiles that the other player owns.
+		int tileIndex = player[playerNum - 1].getSpacesOwnedIndex(i);
+		int tileIndex2 = player[otherPlayerNum - 1].getSpacesOwnedIndex(i);
+		//if tileIndex exists
+		if (tileIndex != -1) {
+			cout << setw(ONE) << left << counter1 << setw(TWENTY_FOUR) << ".";
+			counter1 += 1;
+		}
+		else {
+			cout << setw(TWENTY_FIVE) << left << " ";
+		}
+		//if tileIndex2 exists
+		if (tileIndex2 != -1) {
+			cout << setw(ONE) << left << counter2 << setw(TWENTY_FOUR) << ".";
+			counter2 += 1;
+		}
+		else {
+			cout << setw(TWENTY_FIVE) << left << " ";
+		}
+		cout << endl;
+		//Checks if the current player has a property at position i in their array
+		//If they don't, we still need to format the column.
+		if (tileIndex != -1) {
+			cout << left <<setw(TWENTY_FIVE) << tile[tileIndex].getName();
+		}
+		else {
+			cout << left << setw(TWENTY_FIVE) << " ";
+		}
+		
+		//Checks if the other player has a property at position i in their array
+		//If they don't, we still need to format the column.
+		if (tileIndex2 != -1) {
+			cout << left <<setw(TWENTY_FIVE) << tile[tileIndex2].getName();
+		}
+		else {
+			cout << left << setw(TWENTY_FIVE) << " ";
+		}
+		cout << endl;
+
+		//Checks if the current player has a property at position i in their array
+		//If they don't, we still need to format the column.
+		//checks to see if the tile has a color and prints it if it does
+		if (tileIndex != -1 && tile[tileIndex].getColor() != " ") {
+			cout << left << setw(ONE) << "(" << setw(TWENTY_FOUR) << (tile[tileIndex].getColor() + ")");
+
+		}
+		else {
+			cout <<left <<  setw(TWENTY_FIVE) << " ";
+		}
+
+		//Checks if the other player has a property at position i in their array
+		//If they don't, we still need to format the column.
+		//checks to see if the tile has a color and prints it if it does
+		if (tileIndex2 != -1 && tile[tileIndex2].getColor() != " ") {
+			cout << left << setw(ONE) << "(" << setw(TWENTY_FOUR) << (tile[tileIndex2].getColor() + ")");
+		}
+		else {
+			cout << setw(TWENTY_FIVE) << " ";
+		}
+		cout << endl;
+
+		//Prints mortgage value if it exists for current player
+		if (tileIndex != -1) {
+			cout << left <<setw(SEVENTEEN) << "Mortgage Value: $" << setw(EIGHT) << tile[tileIndex].getMortgagePrice();
+		}
+		else {
+			cout << left << setw(TWENTY_FIVE) << " ";
+		}
+
+		//prints mortgage value if it exists for other player
+		if (tileIndex2 != -1) {
+			cout << left << setw(SEVENTEEN) << left << "Mortgage Value: $" << setw(EIGHT) << tile[tileIndex2].getMortgagePrice();
+		}
+		else {
+			cout << left << setw(TWENTY_FIVE) << " ";
+		}
+		cout << endl;
+		
+		//Checks if a tile exists and prints mortgaged or unmortgaged for current player
+		if (tile[tileIndex].getIsMortgaged() && tileIndex != -1) {
+			cout << left << setw(TWENTY_FIVE) << "MORTGAGED";
+		}
+		else if(tileIndex != -1){
+			cout << left << setw(TWENTY_FIVE) << "UNMORTGAGED";
+		}
+		else {
+			cout << left << setw(TWENTY_FIVE) << " ";
+		}
+
+		//Checks if a tile exists and prints mortgaged or unmortgaged for other player
+		if (tile[tileIndex2].getIsMortgaged() && tileIndex2 != -1) {
+			cout << left << setw(TWENTY_FIVE) << "MORTGAGED";
+		}
+		else if (tileIndex2 != -1) {
+			cout << left << setw(TWENTY_FIVE) << "UNMORTGAGED";
+		}
+		else {
+			cout << left << setw(TWENTY_FIVE) << " ";
+		}
+		cout << endl << endl;
+		i++;
+	}
+}
+
 //This function allows the current player to declare bankruptcy
 //at the end of their turn
 int declareBankruptcy(Board tile[], Players player[], int index, int playerNum) {

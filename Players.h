@@ -132,9 +132,10 @@ public:
 		while (index != indexOfSpacesOwned[i]) {
 			i++;
 		}
-		for (int j = i; j < 28 - 1; j++) {
+		for (int j = i; j < 28 - 2; j++) {
 			indexOfSpacesOwned[j] = indexOfSpacesOwned[j + 1];
 		}
+		indexOfSpacesOwned[28 - 1] = -1;
 	}
 	void addBrown() {
 		numBrown += 1;
