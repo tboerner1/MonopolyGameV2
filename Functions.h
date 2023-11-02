@@ -11,6 +11,7 @@
 #include "PlayerTurn.h"
 #include "Constants.h"
 #include <Windows.h>
+#include <vector>
 
 using namespace System;
 using namespace System::ComponentModel;
@@ -38,7 +39,10 @@ void buildMortgage(Board tile[], Players player[], int index, int playerNum);
 void build(Board tile[], Players player[], int index, int playerNum);
 void removeHouses(Board tile[], Players player[], int index, int playerNum);
 void giveTile(Board tile[], Players player[], int index, int playerNum);
+void removeTile(Board tile[], Players player[], int index, int playerNum);
+void subtractTile(Board tile[], Players player[], int index, int playerNum);
 void monopolize(Board tile[], Players player[], int index, int PlayerNum);
+void deMonopolize(Board tile[], Players player[], int index, int PlayerNum);
 bool checkIsMortgaged(Board tile[], Players player[], int index, int playerNum);
 void jailTurn(Board tile[], Players player[], int playerNum);
 void giveOnePlayerProperties(Board tile[], Players player[], int index, int playerNum);
@@ -178,6 +182,11 @@ void giveTile(Board tile[], Players player[], int index, int playerNum) {
 	addTile(tile, player, index, playerNum);
 }
 
+void removeTile(Board tile[], Players player[], int index, int playerNum) {
+	player[playerNum - 1].subtractProperty(index);
+	subtractTile(tile, player, index, playerNum);
+}
+
 //this function adds the tile in one of the player's numColor variables, it also
 //monopolizes a tile if need be.
 void addTile(Board tile[], Players player[], int index, int playerNum) {
@@ -214,6 +223,44 @@ void addTile(Board tile[], Players player[], int index, int playerNum) {
 		}
 	}
 	monopolize(tile, player, index, playerNum);
+}
+
+//this function subtracts the tile in one of the player's numColor variables, it also
+//unmonopolizes a tile if need be.
+void subtractTile(Board tile[], Players player[], int index, int playerNum) {
+	if (tile[index].getId() == "utility") {
+		player[playerNum - 1].subtractUtility();
+	}
+	else if (tile[index].getId() == "railroad") {
+		player[playerNum - 1].subtractRailroad();
+	}
+	else {
+		if (tile[index].getColor() == "Brown") {
+			player[playerNum - 1].subtractBrown();
+		}
+		else if (tile[index].getColor() == "Light_Blue") {
+			player[playerNum - 1].subtractLightBlue();
+		}
+		else if (tile[index].getColor() == "Pink") {
+			player[playerNum - 1].subtractPink();
+		}
+		else if (tile[index].getColor() == "Orange") {
+			player[playerNum - 1].subtractOrange();
+		}
+		else if (tile[index].getColor() == "Red") {
+			player[playerNum - 1].subtractRed();
+		}
+		else if (tile[index].getColor() == "Yellow") {
+			player[playerNum - 1].subtractYellow();
+		}
+		else if (tile[index].getColor() == "Green") {
+			player[playerNum - 1].subtractGreen();
+		}
+		else if (tile[index].getColor() == "Dark_Blue") {
+			player[playerNum - 1].subtractDarkBlue();
+		}
+	}
+	deMonopolize(tile, player, index, playerNum);
 }
 
 //This function sets any property to a monopoly if the player has the correct amount of that property
@@ -266,6 +313,64 @@ void monopolize(Board tile[], Players player[], int index, int PlayerNum) {
 		else if (tile[index].getColor() == "Dark_Blue" && player[PlayerNum - 1].getNumDarkBlue() == 2) {
 			tile[DARK_BLUE1].setIsMonopolized();
 			tile[DARK_BLUE2].setIsMonopolized();
+		}
+	}
+
+}
+
+//This function gets rid of a monopoly if they no longer meet the requirements of a monopoly.
+void deMonopolize(Board tile[], Players player[], int index, int PlayerNum) {
+	if (tile[index].getIsMonopolized()) {
+		removeHouses(tile, player, index, PlayerNum);
+		if (tile[index].getId() == "utility" && player[PlayerNum - 1].getNumUtilities() < 2) {
+			tile[UTILITY1].unMonopolize();
+			tile[UTILITY2].unMonopolize();
+		}
+		else if (tile[index].getId() == "railroad" && player[PlayerNum - 1].getNumUtilities() < 4) {
+			tile[RAILROAD1].unMonopolize();
+			tile[RAILROAD2].unMonopolize();
+			tile[RAILROAD3].unMonopolize();
+			tile[RAILROAD4].unMonopolize();
+		}
+		else if (tile[index].getId() == "bProperty") {
+			if (tile[index].getColor() == "Brown" && player[PlayerNum - 1].getNumBrown() < 2) {
+				tile[BROWN1].unMonopolize();
+				tile[BROWN2].unMonopolize();
+			}
+			else if (tile[index].getColor() == "Light_Blue" && player[PlayerNum - 1].getNumLightBlue() < 3) {
+				tile[LIGHT_BLUE1].unMonopolize();
+				tile[LIGHT_BLUE2].unMonopolize();
+				tile[LIGHT_BLUE3].unMonopolize();
+			}
+			else if (tile[index].getColor() == "Pink" && player[PlayerNum - 1].getNumPink() < 3) {
+				tile[PINK1].unMonopolize();
+				tile[PINK2].unMonopolize();
+				tile[PINK3].unMonopolize();
+			}
+			else if (tile[index].getColor() == "Orange" && player[PlayerNum - 1].getNumOrange() < 3) {
+				tile[ORANGE1].unMonopolize();
+				tile[ORANGE2].unMonopolize();
+				tile[ORANGE3].unMonopolize();
+			}
+			else if (tile[index].getColor() == "Red" && player[PlayerNum - 1].getNumRed() < 3) {
+				tile[RED1].unMonopolize();
+				tile[RED2].unMonopolize();
+				tile[RED3].unMonopolize();
+			}
+			else if (tile[index].getColor() == "Yellow" && player[PlayerNum - 1].getNumYellow() < 3) {
+				tile[YELLOW1].unMonopolize();
+				tile[YELLOW2].unMonopolize();
+				tile[YELLOW3].unMonopolize();
+			}
+			else if (tile[index].getColor() == "Green" && player[PlayerNum - 1].getNumGreen() < 3) {
+				tile[GREEN1].unMonopolize();
+				tile[GREEN2].unMonopolize();
+				tile[GREEN3].unMonopolize();
+			}
+			else if (tile[index].getColor() == "Dark_Blue" && player[PlayerNum - 1].getNumDarkBlue() < 2) {
+				tile[DARK_BLUE1].unMonopolize();
+				tile[DARK_BLUE2].unMonopolize();
+			}
 		}
 	}
 
@@ -847,6 +952,9 @@ void trade(Board tile[], Players player[], int playerNum, int otherPlayerNum) {
 
 	int counter1 = 1;
 	int counter2 = 1;
+	int temp;
+	vector <int> trade1;
+	vector <int> trade2;
 	system("cls");
 	//This prints off the beginning of each column for the players.
 	cout << setw(SEVEN) << left << "Player " << setw(EIGHTEEN)<< playerNum 
@@ -961,6 +1069,49 @@ void trade(Board tile[], Players player[], int playerNum, int otherPlayerNum) {
 		}
 		cout << endl << endl;
 		i++;
+	}
+
+	cout << "Which properties would you like to propose from player " << playerNum << "?" << endl;
+	cout << "Please enter this as a list of numbers separated by spaces (end with a '.' or other character): ";
+	while (true) {
+		cin >> temp;
+		temp = player[playerNum-1].getSpacesOwnedIndex(temp - 1);
+		trade1.push_back(temp);
+		if (cin.peek() == '\n') {
+			temp = 0;
+			break;
+		}
+	}
+	cout << endl;
+	cout << endl;
+	cout << "Which properties would you like to propose from player " << otherPlayerNum << "?" << endl;
+	cout << "Please enter this as a list of numbers separated by spaces: ";
+	while (true) {
+		cin >> temp;
+		temp = player[otherPlayerNum - 1].getSpacesOwnedIndex(temp - 1);
+		trade2.push_back(temp);
+		if (cin.peek() == '\n') {
+			temp = 0;
+			break;
+		}
+	}
+	//NEED TO PRINT PROPERTIES HERE AGAIN AND HAVE OTHER PLAYER ACCEPT THE TRADE
+
+	cout << endl;
+	cout << endl;
+	//removes tile from current player and gives it to other player
+	//Then pops the value out of the vector
+	for (int i = trade1.size() - 1; i >= 0; i--) {
+		removeTile(tile, player, trade1[i], playerNum);
+		giveTile(tile, player, trade1[i], otherPlayerNum);
+		trade1.pop_back();
+	}
+	//removes tile from other player and gives it to current player
+	//then pops the value out of the vector.
+	for (int i = trade2.size() - 1; i >= 0; i--) {
+		removeTile(tile, player, trade2[i], otherPlayerNum);
+		giveTile(tile, player, trade2[i], playerNum);
+		trade2.pop_back();
 	}
 }
 
