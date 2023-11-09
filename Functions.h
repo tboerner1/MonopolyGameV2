@@ -13,6 +13,7 @@
 #include <Windows.h>
 #include <vector>
 #include "CommunityChestCards.h"
+#include "ChanceCards.h"
 
 using namespace System;
 using namespace System::ComponentModel;
@@ -50,6 +51,8 @@ void giveOnePlayerProperties(Board tile[], Players player[], int index, int play
 void giveUpProperties(Board tile[], Players player[], int index, int playerNum);
 void initializeTrade(Board tile[], Players player[], int playerNum);
 void trade(Board tile[], Players player[], int playerNum, int otherPlayerNum);
+void drawChanceCard(Board tile[], Players player[], int index, int playerNum);
+void drawCommCard(Board tile[], Players player[], int index, int playerNum);
 
 
 int num_bankrupt = 0;
@@ -138,6 +141,9 @@ void checkSpace(Board tile[], Players player[], int index, int playerNum) {
 	}
 	else if (tile[index].getId() == "cChest") {
 		drawCommCard(tile, player, index, playerNum);
+	}
+	else if (tile[index].getId() == "chance") {
+		drawChanceCard(tile, player, index, playerNum);
 	}
 
 
@@ -1115,6 +1121,166 @@ void trade(Board tile[], Players player[], int playerNum, int otherPlayerNum) {
 	}
 }
 
+void drawChanceCard(Board tile[], Players player[], int index, int playerNum) {
+	int random = (rand() % 16) + 1;
+	//Distances to railroads or utilities
+	int dist1 = 0, dist2 = 0, dist3 = 0, dist4 = 0;
+	int newPosition = 0;
+
+
+	switch (random) {
+	case 1:
+		MessageBox::Show("Player " + (playerNum + 1) + "\n" + "Advance to Boardwalk",
+			"Chance Card", MessageBoxButtons::OK);
+		if (DARK_BLUE2 <= player[playerNum - 1].getPosition() - 1) {
+			player[playerNum - 1].addMoney(200);
+		}
+		player[playerNum - 1].setPosition(DARK_BLUE2 + 1);
+		checkSpace(tile, player, player[playerNum - 1].getPosition() - 1, playerNum);
+		break;
+	case 2:
+		MessageBox::Show("Player " + (playerNum + 1) + "\n" + "Advance to GO (Collect $200)",
+			"Chance Card", MessageBoxButtons::OK);
+		player[playerNum - 1].setPosition(GO + 1);
+		player[playerNum - 1].addMoney(200);
+		break;
+	case 3:
+		MessageBox::Show("Player " + (playerNum + 1) + "\n" + "Advance to Illinois Avenue\n"
+			+ "If you pass GO, collect $200", "Chance Card", MessageBoxButtons::OK);
+		if (RED3 <= player[playerNum - 1].getPosition() - 1) {
+			player[playerNum - 1].addMoney(200);
+		}
+		player[playerNum - 1].setPosition(RED3 + 1);
+		checkSpace(tile, player, player[playerNum - 1].getPosition() - 1, playerNum);
+		break;
+	case 4:
+		MessageBox::Show("Player " + (playerNum + 1) + "\n" + "Advance to St. Charles Place\n"
+			+ "If you pass GO, collect $200", "Chance Card", MessageBoxButtons::OK);
+		if (PINK1 <= player[playerNum - 1].getPosition() - 1) {
+			player[playerNum - 1].addMoney(200);
+		}
+		player[playerNum - 1].setPosition(PINK1 + 1);
+		checkSpace(tile, player, player[playerNum - 1].getPosition() - 1, playerNum);
+		break;
+	case 5:
+		//FIX CASE 5, 6, and 7
+		MessageBox::Show("Player " + (playerNum + 1) + "\n" + "Advance to nearest Railroad\n"
+			+ "If unowned, you may buy it.\n If owned, pay double the normal rent",
+			"Chance Card", MessageBoxButtons::OK);
+		while (tile[player[playerNum - 1].getPosition() - 1].getId() != "railroad") {
+			if (player[playerNum - 1].getPosition() == 40) {
+				player[playerNum - 1].setPosition(1);
+			}
+			else {
+				player[playerNum - 1].setPosition(player[playerNum - 1].getPosition() + 1);
+			}
+		}
+		checkSpace(tile, player, player[playerNum - 1].getPosition() - 1, playerNum);
+		break;
+	case 6:
+		MessageBox::Show("Player " + (playerNum + 1) + "\n" + "Advance to nearest Railroad\n"
+			+ "If unowned, you may buy it.\n If owned, pay double the normal rent",
+			"Chance Card", MessageBoxButtons::OK);
+		while (tile[player[playerNum - 1].getPosition() - 1].getId() != "railroad") {
+			if (player[playerNum - 1].getPosition() == 40) {
+				player[playerNum - 1].setPosition(1);
+			}
+			else {
+				player[playerNum - 1].setPosition(player[playerNum - 1].getPosition() + 1);
+			}
+		}
+		checkSpace(tile, player, player[playerNum - 1].getPosition() - 1, playerNum);
+		break;
+	case 7:
+		MessageBox::Show("Player " + (playerNum + 1) + "\n" + "Advance to nearest Utility\n"
+			+ "If unowned, you may buy it.\n If owned, pay 10 times dice roll",
+			"Chance Card", MessageBoxButtons::OK);
+		while (tile[player[playerNum - 1].getPosition() - 1].getId() != "utility") {
+			if (player[playerNum - 1].getPosition() == 40) {
+				player[playerNum - 1].setPosition(1);
+			}
+			else {
+				player[playerNum - 1].setPosition(player[playerNum - 1].getPosition() + 1);
+			}
+		}
+		checkSpace(tile, player, player[playerNum - 1].getPosition() - 1, playerNum);
+		break;
+	case 8:
+		MessageBox::Show("Player " + (playerNum + 1) + "\n" + "Bank pays you dividend of $50.",
+			"Chance Card", MessageBoxButtons::OK);
+		player[playerNum - 1].addMoney(50);
+		break;
+	case 9:
+		MessageBox::Show("Player " + (playerNum + 1) + "\n" + "Get out of Jail Free",
+			"Chance Card", MessageBoxButtons::OK);
+		player[playerNum - 1].addNumGetOutOfJailCards();
+		break;
+	case 10:
+		MessageBox::Show("Player " + (playerNum + 1) + "\n" + "Go back 3 spaces",
+			"Chance Card", MessageBoxButtons::OK);
+		newPosition = player[playerNum - 1].getPosition() - 3;
+		if (newPosition <= 0) {
+			newPosition = JAIL + newPosition;
+		}
+		player[playerNum - 1].setPosition(newPosition);
+		if (player[playerNum - 1].getPosition() == GO + 1) {
+			player[playerNum].addMoney(200);
+		}
+		break;
+	case 11:
+		MessageBox::Show("Player " + (playerNum + 1) + "\n" + "Go to Jail. Go directly to jail,\n" +
+			"do not pass GO, do not collect $200", "Chance Card", MessageBoxButtons::OK);
+		player[playerNum - 1].setPosition(JAIL + 1);
+		break;
+	case 12:
+		MessageBox::Show("Player " + (playerNum + 1) + "\n" + "Make General repairs on all your property\n" +
+			"$25 per house, $100 per hotel", "Chance Card", MessageBoxButtons::OK);
+		cout << "Come back to this:";
+		//Create function to do this
+		break;
+	case 13:
+		MessageBox::Show("Player " + (playerNum + 1) + "\n" + "Speeding Fine of $15",
+			"Chance Card", MessageBoxButtons::OK);
+		if (player[playerNum - 1].getMoney() < 15) {
+			checkMortgage(tile, player, index, playerNum, 15, "to pay $15");
+		}
+		if (player[playerNum - 1].getMoney() >= 15) {
+			player[playerNum - 1].subtractMoney(15);
+		}
+		break;
+	case 14:
+		MessageBox::Show("Player " + (playerNum + 1) + "\n" + "Advance to Reading Railroad\n"
+			+ "If you pass GO, collect $200", "Chance Card", MessageBoxButtons::OK);
+		if (RAILROAD1 <= player[playerNum - 1].getPosition() - 1) {
+			player[playerNum - 1].addMoney(200);
+		}
+		player[playerNum - 1].setPosition(RAILROAD1 + 1);
+		checkSpace(tile, player, player[playerNum - 1].getPosition() - 1, playerNum);
+		break;
+	case 15:
+		MessageBox::Show("Player " + (playerNum + 1) + "\n" + "You've been elected as Chairman of the Board.\n" +
+			"Pay each player $50", "Chance Card", MessageBoxButtons::OK);
+		for (int i = 0; i < NUM_PLAYERS; i++) {
+			if (!player[i].getIsBankrupt() && i != playerNum - 1) {
+				if (player[playerNum - 1].getMoney() < 50) {
+					checkMortgage(tile, player, index, i + 1, 50, "to pay $50");
+				}
+				if (player[playerNum - 1].getMoney() >= 50) {
+					player[playerNum - 1].subtractMoney(50);
+					player[i].addMoney(50);
+				}
+			}
+		}
+		break;
+	case 16:
+		MessageBox::Show("Player " + (playerNum + 1) + "\n" + "Your building loan matures.\n Collect $150",
+			"Chance Card", MessageBoxButtons::OK);
+		player[playerNum - 1].addMoney(150);
+		break;
+	}
+}
+
+
 //This function allows the current player to declare bankruptcy
 //at the end of their turn
 int declareBankruptcy(Board tile[], Players player[], int index, int playerNum) {
@@ -1136,6 +1302,121 @@ int declareBankruptcy(Board tile[], Players player[], int index, int playerNum) 
 	cout << "Giving ALL players Properties" << endl;
 	giveUpProperties(tile, player, index, playerNum);
 	return 1;
+}
+
+void drawCommCard(Board tile[], Players player[], int index, int playerNum) {
+	int random = (rand() % 16) + 1;
+
+	switch (random) {
+	case 1:
+		MessageBox::Show("Player " + (playerNum + 1) + "\n" + "Advance to GO (Collect $200)",
+			"Community Chest Card", MessageBoxButtons::OK);
+		player[playerNum - 1].setPosition(GO + 1);
+		player[playerNum - 1].addMoney(200);
+		break;
+	case 2:
+		MessageBox::Show("Player " + (playerNum + 1) + "\n" + "Bank error in your favor\n (Collect $200)",
+			"Community Chest Card", MessageBoxButtons::OK);
+		player[playerNum - 1].addMoney(200);
+		break;
+	case 3:
+		MessageBox::Show("Player " + (playerNum + 1) + "\n" + "Doctor's Fee (Pay $50)",
+			"Community Chest Card", MessageBoxButtons::OK);
+		if (player[playerNum - 1].getMoney() < 50) {
+			checkMortgage(tile, player, index, playerNum, 50, "to pay $50");
+		}
+		if (player[playerNum - 1].getMoney() >= 50) {
+			player[playerNum - 1].subtractMoney(50);
+		}
+		break;
+	case 4:
+		MessageBox::Show("Player " + (playerNum + 1) + "\n" + "From sale of stock,\n you get $50",
+			"Community Chest Card", MessageBoxButtons::OK);
+		player[playerNum - 1].addMoney(50);
+		break;
+	case 5:
+		MessageBox::Show("Player " + (playerNum + 1) + "\n" + "Get out of Jail Free",
+			"Community Chest Card", MessageBoxButtons::OK);
+		player[playerNum - 1].addNumGetOutOfJailCards();
+		break;
+	case 6:
+		MessageBox::Show("Player " + (playerNum + 1) + "\n" + "Go to Jail. Go directly to jail,\n" +
+			"do not pass GO, do not collect $200", "Community Chest Card", MessageBoxButtons::OK);
+		player[playerNum - 1].setPosition(JAIL + 1);
+		break;
+	case 7:
+		MessageBox::Show("Player " + (playerNum + 1) + "\n" + "Holiday Fund Matures.\n Receive $100",
+			"Community Chest Card", MessageBoxButtons::OK);
+		player[playerNum - 1].addMoney(100);
+		break;
+	case 8:
+		MessageBox::Show("Player " + (playerNum + 1) + "\n" + "Income Tax refund.\n Collect $20",
+			"Community Chest Card", MessageBoxButtons::OK);
+		player[playerNum - 1].addMoney(20);
+		break;
+	case 9:
+		MessageBox::Show("Player " + (playerNum + 1) + "\n" + "It is your birthday.\n Collect $10 from each player",
+			"Community Chest Card", MessageBoxButtons::OK);
+		for (int i = 0; i < NUM_PLAYERS; i++) {
+			if (!player[i].getIsBankrupt() && i != playerNum - 1) {
+				if (player[i].getMoney() < 10) {
+					checkMortgage(tile, player, index, i + 1, 10, "to pay $10");
+				}
+				if (player[i].getMoney() >= 10) {
+					player[i].subtractMoney(10);
+					player[playerNum - 1].addMoney(10);
+				}
+			}
+		}
+		break;
+	case 10:
+		MessageBox::Show("Player " + (playerNum + 1) + "\n" + "Life Insurance Matures.\n Collect $100",
+			"Community Chest Card", MessageBoxButtons::OK);
+		player[playerNum - 1].addMoney(100);
+		break;
+	case 11:
+		MessageBox::Show("Player " + (playerNum + 1) + "\n" + "Pay hospital fees of $100",
+			"Community Chest Card", MessageBoxButtons::OK);
+		if (player[playerNum - 1].getMoney() < 100) {
+			checkMortgage(tile, player, index, playerNum, 100, "to pay $100");
+		}
+		if (player[playerNum - 1].getMoney() >= 100) {
+			player[playerNum - 1].subtractMoney(100);
+		}
+		break;
+	case 12:
+		MessageBox::Show("Player " + (playerNum + 1) + "\n" + "Pay school fees of $50",
+			"Community Chest Card", MessageBoxButtons::OK);
+		if (player[playerNum - 1].getMoney() < 50) {
+			checkMortgage(tile, player, index, playerNum, 50, "to pay $50");
+		}
+		if (player[playerNum - 1].getMoney() >= 50) {
+			player[playerNum - 1].subtractMoney(50);
+		}
+		break;
+	case 13:
+		MessageBox::Show("Player " + (playerNum + 1) + "\n" + "Recieve $25 consulting fee",
+			"Community Chest Card", MessageBoxButtons::OK);
+		player[playerNum - 1].addMoney(25);
+		break;
+	case 14:
+		MessageBox::Show("Player " + (playerNum + 1) + "\n" + "You are assessed for street repair\n" +
+			"$40 per house, $115 per hotel", "Community Chest Card", MessageBoxButtons::OK);
+		cout << "Come back to this:";
+		//Create function to do this
+		break;
+	case 15:
+		MessageBox::Show("Player " + (playerNum + 1) + "\n" + "You won 2nd in a beauty contest.\n Collect $10",
+			"Community Chest Card", MessageBoxButtons::OK);
+		player[playerNum - 1].addMoney(10);
+		break;
+	case 16:
+		MessageBox::Show("Player " + (playerNum + 1) + "\n" + "You inherit $100",
+			"Community Chest Card", MessageBoxButtons::OK);
+		player[playerNum - 1].addMoney(100);
+		break;
+
+	}
 }
 
 #endif // !H_Functions
