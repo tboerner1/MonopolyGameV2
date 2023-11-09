@@ -36,4 +36,10 @@ const int DARK_BLUE1 = 37;
 const int DARK_BLUE2 = 39;
 const int JAIL = 40;
 
+int playerIndex = 0;
+
+const int NUM_SPACES = 41;
+const int NUM_PLAYERS = 3;
+const int MONEY = 2000;
+
 #endif

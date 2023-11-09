@@ -12,6 +12,7 @@
 #include "Constants.h"
 #include <Windows.h>
 #include <vector>
+#include "CommunityChestCards.h"
 
 using namespace System;
 using namespace System::ComponentModel;
@@ -50,11 +51,7 @@ void giveUpProperties(Board tile[], Players player[], int index, int playerNum);
 void initializeTrade(Board tile[], Players player[], int playerNum);
 void trade(Board tile[], Players player[], int playerNum, int otherPlayerNum);
 
-int playerIndex = 0;
 
-const int NUM_SPACES = 41;
-const int NUM_PLAYERS = 3;
-const int MONEY = 2000;
 int num_bankrupt = 0;
 Board tile[NUM_SPACES];
 Players player[NUM_PLAYERS];
@@ -129,15 +126,18 @@ void checkSpace(Board tile[], Players player[], int index, int playerNum) {
 			rent(tile, player, index, playerNum);
 		}
 	}
-	if (tile[index].getId() == "tax") {
+	else if (tile[index].getId() == "tax") {
 		tax(tile, player, index, playerNum);
 	}
-	if (tile[index].getId() == "gtJail") {
+	else if (tile[index].getId() == "gtJail") {
 		player[playerNum - 1].setPosition(41);
 	}
-	if (tile[index].getId() == "fParking") {
+	else if (tile[index].getId() == "fParking") {
 		player[playerNum - 1].addMoney(tile[index].getPrice());
 		tile[index].setPrice(0);
+	}
+	else if (tile[index].getId() == "cChest") {
+		drawCommCard(tile, player, index, playerNum);
 	}
 
 
