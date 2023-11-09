@@ -115,6 +115,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Board.h" />
+    <ClInclude Include="ChanceCards.h" />
     <ClInclude Include="CommunityChestCards.h" />
     <ClInclude Include="Constants.h" />
     <ClInclude Include="Functions.h" />
